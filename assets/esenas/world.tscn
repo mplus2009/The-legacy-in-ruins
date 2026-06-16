@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3 uid="uid://bto1nxb7jbuc"]
+
+[ext_resource type="PackedScene" uid="uid://bhrtwyap2elvi" path="res://assets/esenas/villes/villa_5_hospital_habitacion.tscn" id="1_l2k1n"]
+[ext_resource type="PackedScene" uid="uid://brgtddvalxsgq" path="res://assets/esenas/player.tscn" id="2_xi5m8"]
+[ext_resource type="Script" uid="uid://dshq7glq1kedd" path="res://assets/scripts/camera_controller.gd" id="3_xi5m8"]
+
+[node name="world" type="Node2D"]
+
+[node name="villes" type="Node2D" parent="."]
+
+[node name="ville5" type="Node2D" parent="villes"]
+
+[node name="Villa5HospitalHabitacion" parent="villes/ville5" instance=ExtResource("1_l2k1n")]
+position = Vector2(5, 9)
+
+[node name="Player" parent="." instance=ExtResource("2_xi5m8")]
+position = Vector2(331, 363)
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(584, 335)
+position_smoothing_enabled = true
+script = ExtResource("3_xi5m8")
