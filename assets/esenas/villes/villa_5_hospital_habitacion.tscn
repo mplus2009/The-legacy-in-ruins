@@ -1,10 +1,10 @@
 [gd_scene load_steps=11 format=3 uid="uid://bhrtwyap2elvi"]
 
 [ext_resource type="Script" uid="uid://bb8r3v68udnn5" path="res://assets/scripts/villa_5_hospital_habitacion.gd" id="1_1s0lk"]
-[ext_resource type="Texture2D" uid="uid://dqfhewfkp4g2" path="res://assets/sprites/Sin título-2.png" id="1_l2uly"]
+[ext_resource type="Texture2D" uid="uid://dqfhewfkp4g2" path="res://sprites/Sin título-2.png" id="1_l2uly"]
 [ext_resource type="Shape2D" uid="uid://c2vs608e0473a" path="res://assets/properties/new_rectangle_shape_2d01.tres" id="1_yp4hw"]
 [ext_resource type="Shape2D" uid="uid://c7g3w4jtysws2" path="res://assets/properties/new_rectangle_shape_2d001.tres" id="2_43806"]
-[ext_resource type="Texture2D" uid="uid://d1ugrn4iuw5ak" path="res://assets/sprites/Sin título-3.png" id="3_v6dyr"]
+[ext_resource type="Texture2D" uid="uid://d1ugrn4iuw5ak" path="res://sprites/Sin título-3.png" id="3_v6dyr"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2l5eo"]
 size = Vector2(71, 145.5)

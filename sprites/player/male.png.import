@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bamlmmbd153f2"
-path="res://.godot/imported/Sin título-4.png-08992488d20de136f11ef45d440306e5.ctex"
+uid="uid://b2n6d0yd271jo"
+path="res://.godot/imported/male.png-6f00e7ca0c29858c279d0250824a3e62.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/Sin título-4.png"
-dest_files=["res://.godot/imported/Sin título-4.png-08992488d20de136f11ef45d440306e5.ctex"]
+source_file="res://sprites/player/male.png"
+dest_files=["res://.godot/imported/male.png-6f00e7ca0c29858c279d0250824a3e62.ctex"]
 
 [params]
 
