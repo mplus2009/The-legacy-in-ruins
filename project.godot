@@ -20,6 +20,10 @@ config/icon="res://icon.svg"
 Global="*res://assets/scripts/autoloads/global.gd"
 Events="*res://assets/scripts/autoloads/events.gd"
 
+[display]
+
+window/size/resizable=false
+
 [input]
 
 "ui_up "={

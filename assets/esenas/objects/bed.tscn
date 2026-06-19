@@ -1,0 +1,45 @@
+[gd_scene load_steps=6 format=3 uid="uid://dc4moppeikdlp"]
+
+[ext_resource type="Texture2D" uid="uid://d1ugrn4iuw5ak" path="res://sprites/Sin título-3.png" id="1_rf6qy"]
+[ext_resource type="Script" uid="uid://c1qf2uu23em50" path="res://assets/scripts/objects/bed.gd" id="2_rurc7"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xa1je"]
+size = Vector2(91, 86)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_em3bh"]
+size = Vector2(71, 145.5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_rf6qy"]
+size = Vector2(49, 105)
+
+[node name="bed" type="Node2D"]
+script = ExtResource("2_rurc7")
+
+[node name="bed" type="Sprite2D" parent="."]
+position = Vector2(186, 144)
+texture = ExtResource("1_rf6qy")
+
+[node name="InteractArea" type="Area2D" parent="bed"]
+position = Vector2(-69, 7)
+collision_layer = 2
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="bed/InteractArea"]
+position = Vector2(-4, 4)
+shape = SubResource("RectangleShape2D_xa1je")
+
+[node name="colision_cama" type="StaticBody2D" parent="bed"]
+position = Vector2(-282, -180)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="bed/colision_cama"]
+position = Vector2(260.5, 218.25)
+shape = SubResource("RectangleShape2D_em3bh")
+
+[node name="colision_objeto" type="StaticBody2D" parent="bed"]
+position = Vector2(-1, 0)
+collision_layer = 2
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="bed/colision_objeto"]
+position = Vector2(55, -50)
+shape = SubResource("RectangleShape2D_rf6qy")

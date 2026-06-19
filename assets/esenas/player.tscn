@@ -24,10 +24,10 @@ scale = Vector2(-166.446, 170.367)
 texture = SubResource("PlaceholderTexture2D_5a3ph")
 
 [node name="InteractArea" type="Area2D" parent="."]
-collision_layer = 3
-collision_mask = 3
+collision_layer = 0
+collision_mask = 2
 
-[node name="InteractCollision" type="CollisionShape2D" parent="InteractArea"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractArea"]
 position = Vector2(-1, 1)
 shape = SubResource("RectangleShape2D_v0hbh")
 

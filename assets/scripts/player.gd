@@ -1,48 +1,134 @@
 extends CharacterBody2D
 
+# ============================================
+# CONSTANTES
+# ============================================
 const SPEED: float = 300.0
 const SPRINT_SPEED: float = 450.0
 
+# ============================================
+# VARIABLES
+# ============================================
 var current_speed: float = SPEED
 var can_move: bool = true
-var move_to_target: Vector2 = Vector2.ZERO
-var use_move_to_click: bool = false
-var click_marker: ColorRect = null
 
+# Interacción
+var nearest_interactable: Node = null
+var objects_in_range: Array = []
+
+# ============================================
+# REFERENCIAS
+# ============================================
 @onready var sprite = $Sprite2D
 @onready var interact_area = $InteractArea
 
+# ============================================
+# READY
+# ============================================
 func _ready():
-	_load_gender_sprite()
-	print("✅ Jugador cargado - Género: ", Global.player_gender)
+	print("✅ Jugador cargado")
+	
+	# Configurar capas
+	collision_layer = 1
+	collision_mask = 1
+	
+	if interact_area:
+		interact_area.collision_layer = 0
+		interact_area.collision_mask = 2
+		interact_area.body_entered.connect(_on_interact_area_entered)
+		interact_area.body_exited.connect(_on_interact_area_exited)
+		interact_area.area_entered.connect(_on_interact_area_entered)
+		interact_area.area_exited.connect(_on_interact_area_exited)
+		print("📌 Área de interacción configurada (Mask: 2)")
+	else:
+		print("❌ ERROR: No hay InteractArea")
+	
+	# Crear indicador de interacción
+	_create_interact_indicator()
 
 # ============================================
-# CARGA DE SPRITE SEGÚN GÉNERO
+# INDICADOR DE INTERACCIÓN
 # ============================================
-func _load_gender_sprite():
-	var texture_path = "res://assets/sprites/player/" + Global.player_gender + ".png"
+func _create_interact_indicator():
+	var indicator = ColorRect.new()
+	indicator.name = "InteractIndicator"
+	indicator.size = Vector2(80, 30)
+	indicator.color = Color(0, 0.8, 0, 0.7)
+	indicator.position = Vector2(-40, -70)
+	indicator.visible = false
+	add_child(indicator)
 	
-	if ResourceLoader.exists(texture_path):
-		var texture = load(texture_path)
-		sprite.texture = texture
-		print("📁 Sprite cargado desde: ", texture_path)
-	else:
-		_create_placeholder_sprite()
-	
-	sprite.scale = Vector2(2.0, 2.0)
+	var label = Label.new()
+	label.text = "[E]"
+	label.position = Vector2(25, 0)
+	label.add_theme_font_size_override("font_size", 18)
+	label.add_theme_color_override("font_color", Color(1, 1, 1, 1))
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	indicator.add_child(label)
 
-func _create_placeholder_sprite():
-	var image = Image.create(64, 64, false, Image.FORMAT_RGBA8)
+func _update_indicator(show: bool, is_ready: bool = false):
+	var indicator = get_node_or_null("InteractIndicator")
+	if indicator:
+		indicator.visible = show
+		if show and is_ready:
+			indicator.color = Color(0, 0.8, 0, 0.9)
+		elif show:
+			indicator.color = Color(0.8, 0.8, 0, 0.7)
+
+# ============================================
+# DETECCIÓN DE INTERACTUABLES
+# ============================================
+func _on_interact_area_entered(body: Node2D):
+	print("📌 Entró: ", body.name)
+	var interactable = _find_interactable(body)
+	if interactable:
+		if interactable not in objects_in_range:
+			objects_in_range.append(interactable)
+			print("✅ Interactuable añadido: ", interactable.name)
+		_update_nearest()
+
+func _on_interact_area_exited(body: Node2D):
+	print("📌 Salió: ", body.name)
+	var interactable = _find_interactable(body)
+	if interactable:
+		if interactable in objects_in_range:
+			objects_in_range.erase(interactable)
+			print("✅ Interactuable removido: ", interactable.name)
+		_update_nearest()
+
+func _update_nearest():
+	var nearest = null
+	var min_dist = INF
 	
-	if Global.player_gender == "male":
-		image.fill(Color(0.29, 0.56, 0.89, 1.0))
-	else:
-		image.fill(Color(0.89, 0.29, 0.56, 1.0))
+	for obj in objects_in_range:
+		if is_instance_valid(obj):
+			var d = global_position.distance_to(obj.global_position)
+			if d < min_dist:
+				min_dist = d
+				nearest = obj
 	
-	var texture = ImageTexture.create_from_image(image)
-	sprite.texture = texture
-	sprite.scale = Vector2(2.0, 2.0)
-	print("🎨 Sprite placeholder creado para género: ", Global.player_gender)
+	if nearest != nearest_interactable:
+		if nearest_interactable and nearest_interactable.has_method("highlight"):
+			nearest_interactable.highlight(false)
+		
+		nearest_interactable = nearest
+		
+		if nearest_interactable:
+			if nearest_interactable.has_method("highlight"):
+				nearest_interactable.highlight(true)
+			_update_indicator(true, true)
+			print("🎯 Objeto seleccionado: ", nearest_interactable.name)
+		else:
+			_update_indicator(false, false)
+			print("🎯 Sin objeto seleccionado")
+
+func _find_interactable(node):
+	if not node:
+		return null
+	if node.has_method("on_interact"):
+		return node
+	return _find_interactable(node.get_parent())
 
 # ============================================
 # MOVIMIENTO
@@ -52,143 +138,56 @@ func _physics_process(_delta):
 		return
 	
 	var input_dir = Vector2.ZERO
-	var use_keyboard = false
 	
-	# Movimiento con teclado (WASD o Flechas)
 	if Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT):
 		input_dir.x -= 1
-		use_keyboard = true
 	if Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT):
 		input_dir.x += 1
-		use_keyboard = true
 	if Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP):
 		input_dir.y -= 1
-		use_keyboard = true
 	if Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN):
 		input_dir.y += 1
-		use_keyboard = true
 	
-	# Movimiento con click izquierdo (sin pathfinding)
-	if use_move_to_click and not use_keyboard:
-		var direction = (move_to_target - global_position).normalized()
-		velocity = direction * current_speed
-		move_and_slide()
-		
-		# Si choca con algo, cancelar
-		if velocity.length() > 0 and get_last_slide_collision():
-			_cancel_navigation()
-			print("🚫 Obstáculo encontrado, movimiento cancelado")
-		
-		# Si llegó al destino
-		if global_position.distance_to(move_to_target) < 10:
-			_arrive_at_destination()
+	if input_dir != Vector2.ZERO:
+		input_dir = input_dir.normalized()
 	
-	# Movimiento con teclado
-	if use_keyboard:
-		if input_dir != Vector2.ZERO:
-			input_dir = input_dir.normalized()
-		
-		# Sprint
-		if Input.is_key_pressed(KEY_SHIFT) or Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
-			current_speed = SPRINT_SPEED
-		else:
-			current_speed = SPEED
-		
-		velocity = input_dir * current_speed
-		move_and_slide()
+	if Input.is_key_pressed(KEY_SHIFT):
+		current_speed = SPRINT_SPEED
+	else:
+		current_speed = SPEED
 	
-	# Voltear sprite
+	velocity = input_dir * current_speed
+	move_and_slide()
+	
 	if input_dir.x < 0:
-		sprite.scale = Vector2(-2.0, 2.0)
+		sprite.scale.x = -abs(sprite.scale.x)
 	elif input_dir.x > 0:
-		sprite.scale = Vector2(2.0, 2.0)
-	
-	# Actualizar marcador visual
-	_update_marker_position()
-
-func _input(event):
-	# Click izquierdo: mover hacia posición
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		if can_move:
-			_remove_click_marker()
-			move_to_target = get_global_mouse_position()
-			_create_click_marker()
-			use_move_to_click = true
-			print("🖱️ Mover hacia: ", move_to_target)
-	
-	# Click derecho: cancelar movimiento
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
-		_cancel_navigation()
-	
-	# Tecla E: interactuar
-	if event.is_action_pressed("ui_accept") and can_move:
-		interact()
-
-# ============================================
-# NAVEGACIÓN POR CLICK
-# ============================================
-func _cancel_navigation():
-	if use_move_to_click:
-		_remove_click_marker()
-		use_move_to_click = false
-		velocity = Vector2.ZERO
-		print("🖱️ Movimiento cancelado")
-
-func _arrive_at_destination():
-	_remove_click_marker()
-	use_move_to_click = false
-	velocity = Vector2.ZERO
-	print("📍 Destino alcanzado")
-
-# ============================================
-# INDICADOR VISUAL (MARCADOR DE DESTINO)
-# ============================================
-func _create_click_marker():
-	click_marker = ColorRect.new()
-	click_marker.size = Vector2(16, 16)
-	click_marker.color = Color(1, 0, 0, 0.8)
-	click_marker.position = move_to_target - Vector2(8, 8)
-	get_parent().add_child(click_marker)
-	print("🔴 Marcador de destino creado")
-
-func _update_marker_position():
-	if click_marker and use_move_to_click:
-		click_marker.position = move_to_target - Vector2(8, 8)
-		# Efecto de parpadeo
-		var alpha = (sin(Time.get_ticks_msec() * 0.01) + 1) / 2
-		click_marker.color = Color(1, 0, 0, 0.5 + alpha * 0.3)
-
-func _remove_click_marker():
-	if click_marker:
-		click_marker.queue_free()
-		click_marker = null
-		print("🔴 Marcador de destino eliminado")
+		sprite.scale.x = abs(sprite.scale.x)
 
 # ============================================
 # INTERACCIÓN
 # ============================================
-func interact():
-	print("🔍 Buscando con qué interactuar...")
-	var overlapping_bodies = interact_area.get_overlapping_bodies()
+func _input(event):
+	# Tecla E
+	if event.is_action_pressed("ui_accept") and can_move:
+		interact()
 	
-	for body in overlapping_bodies:
-		if body.has_method("on_interact"):
-			print("✅ Interactuando con: ", body.name)
-			body.on_interact()
-			return
-	
-	print("❌ No hay nada para interactuar aquí")
+	# Click Derecho
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+		if can_move:
+			interact()
 
-# ============================================
-# FUNCIONES PÚBLICAS
-# ============================================
+func interact():
+	print("🔍 Interactuando...")
+	
+	if nearest_interactable and is_instance_valid(nearest_interactable):
+		print("✅ Interactuando con: ", nearest_interactable.name)
+		nearest_interactable.on_interact()
+	else:
+		print("❌ No hay nada para interactuar")
+
 func set_can_move(value: bool):
 	can_move = value
-	if not value:
-		_cancel_navigation()
-		velocity = Vector2.ZERO
-	print("🎮 Movimiento: ", "activado" if value else "desactivado")
 
-func teleport(new_position: Vector2):
-	global_position = new_position
-	_cancel_navigation()
+func teleport(pos: Vector2):
+	global_position = pos

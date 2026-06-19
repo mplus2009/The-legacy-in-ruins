@@ -1,0 +1,52 @@
+[gd_scene load_steps=2 format=3 uid="uid://blg3wyaqqp2iq"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_u2fxx"]
+size = Vector2(1151.5, 152.5)
+
+[node name="Villa5HospitalPasillo01" type="Node2D"]
+
+[node name="backrgound" type="Node2D" parent="."]
+
+[node name="sprites" type="Node2D" parent="backrgound"]
+
+[node name="ColorRect" type="ColorRect" parent="backrgound/sprites"]
+offset_left = 1.0
+offset_top = 263.0
+offset_right = 1153.0
+offset_bottom = 518.0
+color = Color(0.571555, 0.530076, 0.483994, 1)
+
+[node name="ColorRect2" type="ColorRect" parent="backrgound/sprites"]
+offset_left = -1.0
+offset_top = 109.0
+offset_right = 1150.0
+offset_bottom = 261.0
+color = Color(0.635294, 0.996078, 1, 1)
+
+[node name="ColorRect3" type="ColorRect" parent="backrgound/sprites"]
+offset_left = 2.0
+offset_top = 505.0
+offset_right = 1153.0
+offset_bottom = 632.0
+color = Color(0.635294, 0.996078, 1, 1)
+
+[node name="collisions" type="Node2D" parent="backrgound"]
+
+[node name="Area2D" type="Area2D" parent="backrgound/collisions"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="backrgound/collisions/Area2D"]
+position = Vector2(576.25, 184.75)
+shape = SubResource("RectangleShape2D_u2fxx")
+
+[node name="Area2D2" type="Area2D" parent="backrgound/collisions"]
+position = Vector2(-1, 377)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="backrgound/collisions/Area2D2"]
+position = Vector2(576, 203)
+shape = SubResource("RectangleShape2D_u2fxx")
+
+[node name="objects" type="Node2D" parent="."]
+
+[node name="collisions" type="Node2D" parent="objects"]
+
+[node name="sprites" type="Node2D" parent="objects"]
