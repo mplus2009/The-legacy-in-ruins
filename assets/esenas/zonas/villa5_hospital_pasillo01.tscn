@@ -1,9 +1,17 @@
-[gd_scene load_steps=2 format=3 uid="uid://blg3wyaqqp2iq"]
+[gd_scene load_steps=5 format=3 uid="uid://blg3wyaqqp2iq"]
+
+[ext_resource type="Script" uid="uid://es6augr16ywy" path="res://assets/scripts/objects/door.gd" id="1_sw6m4"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_u2fxx"]
 size = Vector2(1151.5, 152.5)
 
-[node name="Villa5HospitalPasillo01" type="Node2D"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0hpmd"]
+size = Vector2(69, 82)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ca3vg"]
+size = Vector2(64, 85)
+
+[node name="villa5_hospital_pasillo01" type="Node2D"]
 
 [node name="backrgound" type="Node2D" parent="."]
 
@@ -50,3 +58,28 @@ shape = SubResource("RectangleShape2D_u2fxx")
 [node name="collisions" type="Node2D" parent="objects"]
 
 [node name="sprites" type="Node2D" parent="objects"]
+
+[node name="door_1_villa5_hospital_habitacion_door_1" type="StaticBody2D" parent="."]
+position = Vector2(64, 513)
+script = ExtResource("1_sw6m4")
+door_id = "door1_2"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="door_1_villa5_hospital_habitacion_door_1"]
+position = Vector2(24.5, 31)
+shape = SubResource("RectangleShape2D_0hpmd")
+
+[node name="InteractArea" type="Area2D" parent="door_1_villa5_hospital_habitacion_door_1"]
+position = Vector2(5, -10)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="door_1_villa5_hospital_habitacion_door_1/InteractArea"]
+position = Vector2(22, 32.5)
+shape = SubResource("RectangleShape2D_ca3vg")
+
+[node name="ColorRect" type="ColorRect" parent="door_1_villa5_hospital_habitacion_door_1"]
+offset_left = -5.0
+offset_top = -3.0
+offset_right = 58.0
+offset_bottom = 72.0
+
+[node name="SpawnPoint" type="Marker2D" parent="door_1_villa5_hospital_habitacion_door_1"]
+position = Vector2(26, -25)

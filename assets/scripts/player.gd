@@ -1,14 +1,8 @@
 extends CharacterBody2D
 
-# ============================================
-# CONSTANTES
-# ============================================
 const SPEED: float = 300.0
 const SPRINT_SPEED: float = 450.0
 
-# ============================================
-# VARIABLES
-# ============================================
 var current_speed: float = SPEED
 var can_move: bool = true
 
@@ -16,9 +10,6 @@ var can_move: bool = true
 var nearest_interactable: Node = null
 var objects_in_range: Array = []
 
-# ============================================
-# REFERENCIAS
-# ============================================
 @onready var sprite = $Sprite2D
 @onready var interact_area = $InteractArea
 
@@ -27,8 +18,8 @@ var objects_in_range: Array = []
 # ============================================
 func _ready():
 	print("✅ Jugador cargado")
+	print("📍 Posición inicial: ", global_position)
 	
-	# Configurar capas
 	collision_layer = 1
 	collision_mask = 1
 	
@@ -40,15 +31,9 @@ func _ready():
 		interact_area.area_entered.connect(_on_interact_area_entered)
 		interact_area.area_exited.connect(_on_interact_area_exited)
 		print("📌 Área de interacción configurada (Mask: 2)")
-	else:
-		print("❌ ERROR: No hay InteractArea")
 	
-	# Crear indicador de interacción
 	_create_interact_indicator()
 
-# ============================================
-# INDICADOR DE INTERACCIÓN
-# ============================================
 func _create_interact_indicator():
 	var indicator = ColorRect.new()
 	indicator.name = "InteractIndicator"
@@ -131,7 +116,7 @@ func _find_interactable(node):
 	return _find_interactable(node.get_parent())
 
 # ============================================
-# MOVIMIENTO
+# MOVIMIENTO CON DEBUG DE POSICIÓN
 # ============================================
 func _physics_process(_delta):
 	if not can_move:
@@ -165,14 +150,26 @@ func _physics_process(_delta):
 		sprite.scale.x = abs(sprite.scale.x)
 
 # ============================================
+# TELETRANSPORTE CON DEBUG
+# ============================================
+func teleport(pos: Vector2):
+	print("========================================")
+	print("🚨 TELETRANSPORTE EJECUTADO")
+	print("   📍 Posición anterior: ", global_position)
+	print("   📍 Nueva posición: ", pos)
+	print("   📍 Diferencia: ", pos - global_position)
+	print("   📍 Stack trace:")
+	print_stack()
+	print("========================================")
+	global_position = pos
+
+# ============================================
 # INTERACCIÓN
 # ============================================
 func _input(event):
-	# Tecla E
 	if event.is_action_pressed("ui_accept") and can_move:
 		interact()
 	
-	# Click Derecho
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
 		if can_move:
 			interact()
@@ -188,6 +185,4 @@ func interact():
 
 func set_can_move(value: bool):
 	can_move = value
-
-func teleport(pos: Vector2):
-	global_position = pos
+	print("🎮 can_move cambiado a: ", value)
